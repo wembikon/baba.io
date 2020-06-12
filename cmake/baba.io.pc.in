@@ -1,0 +1,12 @@
+prefix=@CMAKE_INSTALL_PREFIX@/baba
+exec_prefix=${prefix}
+includedir=${prefix}/include
+libdir=${exec_prefix}/@CMAKE_INSTALL_LIBDIR@
+
+Name: lib@PROJECT_NAME@
+Description: Fast Tiny Async IO Library
+URL: beaujamo@gmail.com
+Version: @BABA_VERSION@
+CFlags: -I${includedir} @PKG_CONFIG_DEFINES@
+Libs: -L${libdir} -lbaba -pthread
+Requires: @PKG_CONFIG_REQUIRES@

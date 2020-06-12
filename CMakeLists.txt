@@ -1,6 +1,8 @@
 cmake_minimum_required(VERSION 3.16)
 
-project(baba_io)
+set(PROJECT_VERSION 2.0.0)
+project(baba.io VERSION ${PROJECT_VERSION} LANGUAGES CXX)
+message(STATUS "Build baba.io: ${PROJECT_VERSION}")
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -76,7 +78,7 @@ target_include_directories(baba_io PUBLIC
   $<INSTALL_INTERFACE:include>
 )
 target_include_directories(baba_io PRIVATE ${CMAKE_SOURCE_DIR}/detail)
-target_link_libraries(baba_io PRIVATE detail)
+target_link_libraries(baba_io PRIVATE baba_io_detail)
 target_link_libraries(baba_io PUBLIC Threads::Threads spdlog::spdlog)
 if (MSVC)
   target_compile_options(baba_io PRIVATE /W3)
@@ -139,6 +141,70 @@ if(BUILD_UNIT_TESTS_ENABLED)
     ${UT_SRCS}
     test/unit/main.cpp
   )
-  target_link_libraries(baba_ut PRIVATE baba_io detail gtest gtest_main gmock gmock_main)
+  target_link_libraries(baba_ut PRIVATE baba_io baba_io_detail gtest gtest_main gmock gmock_main)
   add_test(NAME baba_ut COMMAND baba_ut)
 endif()
+
+#---------------------------------------------------------------------------------------
+# Install
+#---------------------------------------------------------------------------------------
+set(INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/${PROJECT_NAME})
+message(STATUS "Installation directory ${INSTALL_DIR}")
+
+set(EXPORT_DIR "${INSTALL_DIR}/cmake")
+set(EXPORTED_TARGETS_NAME "baba.ioTargets")
+set(TARGETS_FILE "baba.ioTargets.cmake")
+set(CONFIG_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/baba.ioConfigVersion.cmake")
+set(CONFIG_FILE "${CMAKE_CURRENT_BINARY_DIR}/baba.ioConfig.cmake")
+
+set(PKGCONFIG_INSTALL_DIR "${INSTALL_DIR}/pkgconfig")
+set(PKGCONFIG_FILE "${CMAKE_BINARY_DIR}/${PROJECT_NAME}.pc")
+
+# Include files
+install(DIRECTORY inc/baba DESTINATION "${INSTALL_DIR}/include")
+install(
+  TARGETS baba_io baba_io_detail spdlog
+  EXPORT ${EXPORTED_TARGETS_NAME}
+  DESTINATION "${INSTALL_DIR}/lib"
+)
+
+# API visibility
+include(GenerateExportHeader)
+generate_export_header(baba_io)
+install(
+  FILES "${CMAKE_CURRENT_BINARY_DIR}/baba_io_export.h"
+  DESTINATION "${INSTALL_DIR}/include"
+)
+
+# cmake config
+install(
+  EXPORT ${EXPORTED_TARGETS_NAME} 
+  FILE "${TARGETS_FILE}"
+  NAMESPACE baba::io:: 
+  DESTINATION "${EXPORT_DIR}"
+)
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  "${CONFIG_VERSION_FILE}"
+  VERSION ${PROJECT_VERSION}
+  COMPATIBILITY SameMajorVersion
+)
+
+export(
+  EXPORT ${EXPORTED_TARGETS_NAME}
+  FILE "${CONFIG_FILE}"
+  NAMESPACE baba::io::
+)
+
+install(
+  FILES "${CONFIG_VERSION_FILE}" "${CONFIG_FILE}"
+  DESTINATION "${EXPORT_DIR}"
+)
+
+# pkgconfig
+get_target_property(PKG_CONFIG_DEFINES baba_io INTERFACE_COMPILE_DEFINITIONS)
+string(REPLACE ";" " -D" PKG_CONFIG_DEFINES "${PKG_CONFIG_DEFINES}")
+string(CONCAT PKG_CONFIG_DEFINES "-D" "${PKG_CONFIG_DEFINES}")
+configure_file("cmake/${PROJECT_NAME}.pc.in" "${PKGCONFIG_FILE}" @ONLY)
+install(FILES "${PKGCONFIG_FILE}" DESTINATION "${PKGCONFIG_INSTALL_DIR}")

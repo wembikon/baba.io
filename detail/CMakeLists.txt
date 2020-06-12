@@ -47,7 +47,7 @@ elseif(PLATFORM_WINDOWS)
     os/reactor/iocp/events/iocp_timer.cpp
   )
 endif()
-add_library(detail STATIC
+add_library(baba_io_detail STATIC
   ${OS_SRCS}
   os/common/event_registrar.cpp
   os/socket/address_family.cpp
@@ -55,13 +55,19 @@ add_library(detail STATIC
   os/socket/ip_endpoint.cpp
   os/socket/socket_option.cpp
 )
-target_include_directories(detail PRIVATE ${CMAKE_SOURCE_DIR}/inc)
-target_include_directories(detail PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
-target_link_libraries(detail PUBLIC Threads::Threads spdlog::spdlog)
+target_include_directories(baba_io_detail PRIVATE 
+  $<BUILD_INTERFACE:${CMAKE_SOURCE_DIR}/inc>
+  $<INSTALL_INTERFACE:include>
+)
+target_include_directories(baba_io_detail PUBLIC 
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>
+  $<INSTALL_INTERFACE:include>
+)
+target_link_libraries(baba_io_detail PUBLIC Threads::Threads spdlog::spdlog)
 if (MSVC)
-  target_compile_options(detail PRIVATE /W3)
+  target_compile_options(baba_io_detail PRIVATE /W3)
 else()
-  target_compile_options(detail PUBLIC -Wall -Wextra -Wpedantic -fno-rtti -g)
+  target_compile_options(baba_io_detail PUBLIC -Wall -Wextra -Wpedantic -fno-rtti -g)
 endif()
 
 #---------------------------------------------------------------------------------------
@@ -75,14 +81,14 @@ else()
     message(STATUS "baba.io/detail: Building with address sanitizer")
     set(ASAN_COMPILE_FLAG -O1 -g -fsanitize=address -fno-omit-frame-pointer)
     set(ASAN_LINK_FLAG -g -fsanitize=address)
-    target_compile_options(detail PUBLIC ${ASAN_COMPILE_FLAG})
-    target_link_libraries(detail PUBLIC ${ASAN_LINK_FLAG})
+    target_compile_options(baba_io_detail PUBLIC ${ASAN_COMPILE_FLAG})
+    target_link_libraries(baba_io_detail PUBLIC ${ASAN_LINK_FLAG})
   endif()
   if(BUILD_WITH_TSAN_ENABLED)
     message(STATUS "baba.io/detail: Building with thread sanitizer")
     set(TSAN_COMPILE_FLAG -O1 -g -fsanitize=thread)
     set(TSAN_LINK_FLAG -g -fsanitize=thread)
-    target_compile_options(detail PUBLIC ${TSAN_COMPILE_FLAG})
-    target_link_libraries(detail PUBLIC ${TSAN_LINK_FLAG})
+    target_compile_options(baba_io_detail PUBLIC ${TSAN_COMPILE_FLAG})
+    target_link_libraries(baba_io_detail PUBLIC ${TSAN_LINK_FLAG})
   endif()
 endif()
