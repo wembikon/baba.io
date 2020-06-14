@@ -1,15 +1,16 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #include "timer_pimpl.h"
 
 namespace baba {
 
-timer::timer(timer &&tmp) noexcept : _pimpl(new pimpl(std::move(tmp))) {}
+timer::timer(timer &&tmp) noexcept : _strand(tmp._strand), _pimpl(std::move(tmp._pimpl)) {}
 
 timer &timer::operator=(timer &&tmp) noexcept {
+  _strand = tmp._strand;
   _pimpl = std::move(tmp._pimpl);
   return *this;
 }

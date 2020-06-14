@@ -1,15 +1,17 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #include "tcp_socket_pimpl.h"
 
 namespace baba {
 
-tcp_socket::tcp_socket(tcp_socket &&tmp) noexcept : _pimpl(new pimpl(std::move(tmp))) {}
+tcp_socket::tcp_socket(tcp_socket &&tmp) noexcept
+    : _strand(tmp._strand), _pimpl(std::move(tmp._pimpl)) {}
 
 tcp_socket &tcp_socket::operator=(tcp_socket &&tmp) noexcept {
+  _strand = tmp._strand;
   _pimpl = std::move(tmp._pimpl);
   return *this;
 }

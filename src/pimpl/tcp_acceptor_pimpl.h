@@ -1,7 +1,7 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #pragma once
 
@@ -22,7 +22,6 @@
 namespace baba {
 
 struct tcp_acceptor::pimpl final {
-  pimpl(tcp_acceptor &&tmp) noexcept : impl(std::move(tmp._pimpl->impl)) {}
   pimpl() noexcept = default;
   pimpl(io_strand &strand, address_family af) noexcept : impl(strand._pimpl->impl, af) {}
   os::async_acceptor impl;

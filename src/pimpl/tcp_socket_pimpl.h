@@ -1,7 +1,7 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #pragma once
 
@@ -24,7 +24,6 @@
 namespace baba {
 
 struct tcp_socket::pimpl final {
-  pimpl(tcp_socket &&tmp) noexcept : impl(std::move(tmp._pimpl->impl)) {}
   pimpl() noexcept = default;
   pimpl(io_strand &strand, io_handle fd, const ip_endpoint &ep) noexcept
       : impl(strand._pimpl->impl, fd, ep._pimpl->impl) {}

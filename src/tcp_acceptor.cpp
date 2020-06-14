@@ -1,7 +1,7 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #include "tcp_acceptor_pimpl.h"
 
@@ -10,9 +10,11 @@
 
 namespace baba {
 
-tcp_acceptor::tcp_acceptor(tcp_acceptor &&tmp) noexcept : _pimpl(new pimpl(std::move(tmp))) {}
+tcp_acceptor::tcp_acceptor(tcp_acceptor &&tmp) noexcept
+    : _strand(tmp._strand), _pimpl(std::move(tmp._pimpl)) {}
 
 tcp_acceptor &tcp_acceptor::operator=(tcp_acceptor &&tmp) noexcept {
+  _strand = tmp._strand;
   _pimpl = std::move(tmp._pimpl);
   return *this;
 }

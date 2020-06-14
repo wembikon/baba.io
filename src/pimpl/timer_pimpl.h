@@ -1,7 +1,7 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #pragma once
 
@@ -22,7 +22,6 @@
 namespace baba {
 
 struct timer::pimpl final {
-  pimpl(timer &&tmp) noexcept : impl(std::move(tmp._pimpl->impl)) {}
   pimpl() noexcept = default;
   pimpl(io_strand &strand) noexcept : impl(strand._pimpl->impl) {}
   os::async_timer impl;

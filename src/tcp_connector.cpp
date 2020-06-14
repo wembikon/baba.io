@@ -1,7 +1,7 @@
 /**
  * MIT License
  * Copyright (c) 2020 Adrian T. Visarra
-**/
+ **/
 
 #include "tcp_connector_pimpl.h"
 
@@ -9,9 +9,11 @@
 
 namespace baba {
 
-tcp_connector::tcp_connector(tcp_connector &&tmp) noexcept : _pimpl(new pimpl(std::move(tmp))) {}
+tcp_connector::tcp_connector(tcp_connector &&tmp) noexcept
+    : _strand(tmp._strand), _pimpl(std::move(tmp._pimpl)) {}
 
 tcp_connector &tcp_connector::operator=(tcp_connector &&tmp) noexcept {
+  _strand = tmp._strand;
   _pimpl = std::move(tmp._pimpl);
   return *this;
 }
