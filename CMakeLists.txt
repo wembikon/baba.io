@@ -130,11 +130,11 @@ if(BUILD_UNIT_TESTS_ENABLED)
 
   set(UT_SRCS)
   if(PLATFORM_LINUX)
-    add_subdirectory(test/unit/detail/epoll)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/test/unit/detail/epoll)
   elseif(PLATFORM_APPLE)
-    add_subdirectory(test/unit/detail/kqueue)
+    #add_subdirectory(${CMAKE_SOURCE_DIR}/test/unit/detail/kqueue)
   elseif(PLATFORM_WINDOWS)
-    add_subdirectory(test/unit/detail/iocp)
+    add_subdirectory(${CMAKE_SOURCE_DIR}/test/unit/detail/iocp)
   endif()
 
   add_executable(baba_ut
